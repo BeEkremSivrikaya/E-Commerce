@@ -1,4 +1,4 @@
-import 'package:e_commerce_app/utility/admin.dart';
+// import 'package:e_commerce_app/utility/admin.dart';
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         //kullanıcı giriş sayfasına yönlerdirir
-        home: ECommerce());
+        home: Admin());
   }
 }
 // satıcının sattığı ürünleri görme.
