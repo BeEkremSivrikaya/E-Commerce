@@ -13,6 +13,7 @@ class _AdminState extends State<Admin> {
         title: Text("Admin"),
         centerTitle: true,
       ),
+      body: Container(),
     );
   }
 }

@@ -1,4 +1,6 @@
 // import 'package:e_commerce_app/utility/admin.dart';
+import 'dart:developer';
+
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
@@ -33,4 +35,5 @@ class MyApp extends StatelessWidget {
 }
 // satıcının sattığı ürünleri görme.
 // kayıt olan her kullanıcıya account atama
+// admin paneli yapılacak
 
