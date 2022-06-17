@@ -1,8 +1,11 @@
+import 'package:e_commerce_app/utility/admin.dart';
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
 import 'package:e_commerce_app/views/purches.dart';
 import 'package:e_commerce_app/views/register.dart';
+import 'package:e_commerce_app/views/admin.dart';
+
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/login.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +28,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         //kullanıcı giriş sayfasına yönlerdirir
-        home: Login());
+        home: ECommerce());
   }
 }
 // satıcının sattığı ürünleri görme.
