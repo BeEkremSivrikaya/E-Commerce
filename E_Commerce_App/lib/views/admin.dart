@@ -1,72 +1,94 @@
-import 'package:e_commerce_app/utility/user.dart';
+import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
+import 'package:e_commerce_app/views/users.dart';
 import 'package:flutter/material.dart';
-import 'package:e_commerce_app/helper/firebase_helper.dart';
-import 'package:e_commerce_app/utility/account.dart';
-import '../helper/firebase_helper.dart';
 
 class Admin extends StatefulWidget {
-  var user;
-  Admin({this.user});
   @override
-  State<Admin> createState() => _AdminState(user: user);
+  State<Admin> createState() => _AdminState();
 }
 
 class _AdminState extends State<Admin> {
-  var user;
-  _AdminState({this.user})
-
-  List<Account> accounts= List<Account>.empty(growable: true);
-  
-  FirebaseHelper firebaseHelper = FirebaseHelper();
-
   @override
-  
-    void initState() {
-    // TODO: implement initState
-    super.initState();
-    getAllAccounts();
-  }
-
-  getAllAccounts() async {
-    addNewAccount(String id) {
-      firebaseHelper.firestoreGet("accounts", id).then((doc) {
-        Account newAccount = Account(
-            // ownerId: doc["ownerId"],
-            address: doc["address"],
-            moneyAmount: doc["moneyAmount"],
-            ownerId: id);
-            
-            
-        setState(() {
-          accounts.add(newAccount);
-        });
-      });
-    }
-
-    firebaseHelper.firestore.collection("accounts").get().then((snapshot) {
-      snapshot.docs.forEach((doc) => {addNewAccount(doc.id.toString())});
-    });
-  }
-  // en son burda kaldım e-commerce sayfası gibi accountları listelemek için 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Admin"),
-        centerTitle: true,
+        title: Text("Admin"), centerTitle: true,
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         Navigator.push(
+        //             context, MaterialPageRoute(builder: (context) => Basket()));
+        //       },
+        //       icon: Icon(Icons.shopping_cart)),
+        // ]
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          padding: EdgeInsets.only(top: 16),
-          child: ListView.builder(
-            //itemCount: Account,
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return ProductCard(product: products[index]);
-            },
-          ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 100,
+              width: 300,
+              child: RaisedButton(
+                color: Colors.amber,
+                child: Text(
+                  "Kullanıcılar",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Users()));
+                },
+              ),
+            ),
+            Container(
+              height: 20,
+            ),
+            Container(
+              height: 100,
+              width: 300,
+              child: RaisedButton(
+                color: Colors.amber,
+                child: Text(
+                  "Ürünler",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ECommerce()));
+                },
+              ),
+            )
+            // onPressed: () {
+            //         Navigator.push(context,
+            //             MaterialPageRoute(builder: (context) => Basket()));
+            //       },
+            // Container(
+            //     height: 100,
+            //     width: 300,
+            //     child: Center(child: Text('ürünler')),
+            //     decoration: BoxDecoration(
+            //       color: Colors.amber,
+            //       shape: BoxShape.rectangle,
+            //       border: Border.all(
+            //         color: Colors.black,
+            //         width: 2.0,
+            //       ),
+            //     )),
+            // Container(
+            //   height: 100,
+            //   width: 300,
+            //   child: Center(child: Text("Kullanıcılar")),
+            //   decoration: BoxDecoration(
+            //       color: Colors.amber,
+            //       shape: BoxShape.rectangle,
+            //       border: Border.all(
+            //         color: Colors.black,
+            //         width: 2.0,
+            //       )),
+            // )
+          ],
         ),
       ),
     );
