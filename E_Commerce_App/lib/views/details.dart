@@ -84,7 +84,7 @@ class _DetailsState extends State<Details> {
                         ),
 
                         Container(
-                          height: 250,
+                          height: 240,
                           child: ListView.builder(
                             itemCount: allComments.length,
                             shrinkWrap: true,
