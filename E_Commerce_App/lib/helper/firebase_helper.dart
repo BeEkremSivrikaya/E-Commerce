@@ -56,6 +56,7 @@ class FirebaseHelper {
     return user.user;
   }
 
+
   Future firestoreAdd(String path, Map<String, dynamic> map) async {
     return firestore.collection(path).add(map);
   }
@@ -67,7 +68,9 @@ class FirebaseHelper {
   Future firestoreGetAll(String path) async {
     return await firestore.collection(path).get();
   }
-
+  Future firestoreDelete(String path,String id)async{
+    firestore.collection(path).doc(id).delete();
+  }
   uploadProduct(Product product, PlatformFile file) {
     firestoreAdd("products", {
       "id": product.id,

@@ -1,4 +1,7 @@
-import 'package:e_commerce_app/components/users_card.dart';
+import 'package:e_commerce_app/components/user_card.dart';
+import 'package:e_commerce_app/helper/firebase_helper.dart';
+import 'package:e_commerce_app/utility/user.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class Users extends StatefulWidget {
@@ -7,6 +10,50 @@ class Users extends StatefulWidget {
 }
 
 class _UsersState extends State<Users> {
+
+  FirebaseHelper firebaseHelper = FirebaseHelper();
+
+  List<User> Users = List<User>.empty(growable: true);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAllUsers();
+    
+  }
+  getAllUsers()async{
+    addNewProduct(String id) {
+      firebaseHelper.firestoreGet("Person", id).then((doc) {
+        User user = User(
+            id: id,
+            name: doc["name"],
+            surname: doc["surname"],
+            account: doc["account"],
+            eMail: doc["eMail"],
+            password: doc["password"],
+            telNumber: doc["telNumber"]
+            );
+        setState(() {
+          Users.add(user);
+        });
+      });
+    }
+
+    firebaseHelper.firestore.collection("Person").get().then((snapshot) {
+      snapshot.docs.forEach((doc) => {addNewProduct(doc.id.toString())});
+    });
+  }
+
+  Function? delete(User user){
+    firebaseHelper.firestoreDelete("Person", user.id!);
+    setState(() {
+      Users.remove(user);
+    });
+  }
+  Function?  update(User user){
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,20 +62,22 @@ class _UsersState extends State<Users> {
         centerTitle: true,
       ),
 
-      //  body: Padding(
-      //     padding: const EdgeInsets.all(8.0),
-      //     child: Container(
-      //       padding: EdgeInsets.only(top: 16),
-      //       child: ListView.builder(
-      //         itemCount: Users.length,
-      //         shrinkWrap: true,
-      //         physics: ClampingScrollPhysics(),
-      //         itemBuilder: (context, index) {
-      //           return UsersCard(product: products[index]);
-      //         },
-      //       ),
-      //     ),
-      //   )
+       body: Container(
+         child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              padding: EdgeInsets.only(top: 16),
+              child: ListView.builder(
+                itemCount: Users.length,
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return UserCard(user: Users[index], delete: delete, update: update,);
+                },
+              ),
+            ),
+          ),
+       )
     );
   }
 }
