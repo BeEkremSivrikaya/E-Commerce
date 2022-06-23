@@ -1,5 +1,6 @@
 import 'package:e_commerce_app/components/user_card.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
+import 'package:e_commerce_app/sections/user_update.dart';
 import 'package:e_commerce_app/utility/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class Users extends StatefulWidget {
 }
 
 class _UsersState extends State<Users> {
-
+  
   FirebaseHelper firebaseHelper = FirebaseHelper();
 
   List<User> Users = List<User>.empty(growable: true);
@@ -22,16 +23,17 @@ class _UsersState extends State<Users> {
     
   }
   getAllUsers()async{
-    addNewProduct(String id) {
+    addNewUser(String id) {
       firebaseHelper.firestoreGet("Person", id).then((doc) {
         User user = User(
             id: id,
             name: doc["name"],
             surname: doc["surname"],
-            account: doc["account"],
+            accountId: doc["accountId"],
             eMail: doc["eMail"],
             password: doc["password"],
-            telNumber: doc["telNumber"]
+            telNumber: doc["telNumber"],
+            products: doc["products"]
             );
         setState(() {
           Users.add(user);
@@ -40,7 +42,8 @@ class _UsersState extends State<Users> {
     }
 
     firebaseHelper.firestore.collection("Person").get().then((snapshot) {
-      snapshot.docs.forEach((doc) => {addNewProduct(doc.id.toString())});
+      print(snapshot);
+      snapshot.docs.forEach((doc) => {addNewUser(doc.id.toString())});
     });
   }
 
@@ -49,9 +52,12 @@ class _UsersState extends State<Users> {
     setState(() {
       Users.remove(user);
     });
+    user.products.map((product)=>{
+      firebaseHelper.firestoreDelete("products", product.id)
+    });
   }
-  Function?  update(User user){
-
+  Function? update(User user){
+    showModalBottomSheet(context: context, builder: (BuildContext context) { return UserUpdate(user: user,).build(context);});
   }
 
   @override

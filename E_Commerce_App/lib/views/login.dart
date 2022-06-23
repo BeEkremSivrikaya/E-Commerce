@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:e_commerce_app/utility/user.dart';
+import 'package:e_commerce_app/views/admin.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/register.dart';
 
@@ -10,6 +11,7 @@ import 'e_commerce.dart';
 class Login extends StatefulWidget {
   static User user = User();
   static String userId = "";
+  static bool admin = false;
   @override
   State<Login> createState() => _LoginState();
 }
@@ -92,8 +94,19 @@ class _LoginState extends State<Login> {
                   ElevatedButton(
                     onPressed: () async {
                       var user = await firebaseHelper.signIn(email!, password!);
-
-                      print(user!.uid.toString());
+                      firebaseHelper.firestoreGet("Person", user!.uid).then((doc) {
+                        Login.admin = doc["admin"];
+                        User loginUser = User(
+                            id: user.uid,
+                            name: doc["name"],
+                            surname: doc["surname"],
+                            accountId: doc["accountId"],
+                            eMail: doc["eMail"],
+                            password: doc["password"],
+                            telNumber: doc["telNumber"],
+                            products: doc["products"]);
+                        Login.user = loginUser;
+                      });
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

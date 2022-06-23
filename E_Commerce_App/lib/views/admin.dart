@@ -1,5 +1,6 @@
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
+import 'package:e_commerce_app/views/products.dart';
 import 'package:e_commerce_app/views/users.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +57,7 @@ class _AdminState extends State<Admin> {
                 ),
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ECommerce()));
+                      MaterialPageRoute(builder: (context) => Products()));
                 },
               ),
             )

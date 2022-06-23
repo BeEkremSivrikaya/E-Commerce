@@ -28,6 +28,13 @@ class _AdminProductCardState extends State<AdminProductCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getImageUrl();
+  }
+
+  getImageUrl() async {
+    product!.imageUrl =
+        await FirebaseHelper().downloadFile("files", product!.id!);
+    setState(() {});
   }
 
   @override

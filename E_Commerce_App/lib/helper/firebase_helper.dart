@@ -46,16 +46,16 @@ class FirebaseHelper {
       "eMail": newUser.eMail,
       "password": newUser.password,
       "telNumber": newUser.telNumber,
-      "account": newUser.account
+      "accountId": user.user!.uid,
+      "products": [],
     });
-    firestoreAdd("accounts", {
+    firestore.collection("accounts").doc(user.user!.uid.toString()).set({
       "ownerId": user.user!.uid,
       "moneyAmount": "0",
       "address": "",
     });
     return user.user;
   }
-
 
   Future firestoreAdd(String path, Map<String, dynamic> map) async {
     return firestore.collection(path).add(map);
@@ -68,9 +68,38 @@ class FirebaseHelper {
   Future firestoreGetAll(String path) async {
     return await firestore.collection(path).get();
   }
-  Future firestoreDelete(String path,String id)async{
+
+  Future firestoreDelete(String path, String id) async {
     firestore.collection(path).doc(id).delete();
   }
+
+  Future firestoreUpdate(
+      String path, String id, Map<String, dynamic> map) async {
+    firestore.collection(path).doc(id).update(map);
+  }
+
+  Future updateUser(app.User user) async {
+    firestoreUpdate("Person", user.id!, {
+      "name": user.name,
+      "surname": user.surname,
+      "eMail": user.eMail,
+      "password": user.password,
+      "telNumber": user.telNumber,
+    });
+  }
+
+  Future updateProduct(Product product) async {
+    firestoreUpdate("products", product.id!, {
+      "id": product.id,
+      "name": product.name,
+      "comments": product.comments,
+      "description": product.description,
+      "price": product.price,
+      "sellerId": product.sellerId,
+      "category": product.category,
+    });
+  }
+
   uploadProduct(Product product, PlatformFile file) {
     firestoreAdd("products", {
       "id": product.id,
@@ -78,8 +107,14 @@ class FirebaseHelper {
       "comments": [],
       "description": product.description,
       "price": product.price,
-      "sellerId": product.sellerId
-    }).then((value) => {uploadFile(file, value.id)});
+      "sellerId": Login.userId,
+      "category": product.category
+    }).then((value) => {
+          uploadFile(file, value.id),
+          firestore.collection("Person").doc(Login.userId).update({
+            "products": FieldValue.arrayUnion([value.id])
+          })
+        });
   }
 
   Future<PlatformFile> selectFile() async {
@@ -115,6 +150,16 @@ class FirebaseHelper {
   ) async {
     firestore.collection(path).doc(userId).update({
       "comments": FieldValue.arrayUnion([commentId])
+    });
+  }
+
+  Future deleteProductArray(
+    String path,
+    String userId,
+    String productId,
+  ) async {
+    firestore.collection(path).doc(userId).update({
+      "products": FieldValue.arrayRemove([productId])
     });
   }
 
