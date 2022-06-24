@@ -6,7 +6,7 @@ import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/e_commerce.dart';
 import 'package:e_commerce_app/views/purches.dart';
 import 'package:e_commerce_app/views/register.dart';
-import 'package:e_commerce_app/views/admin.dart';
+import 'package:e_commerce_app/views/admin/admin.dart';
 
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/login.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:e_commerce_app/utility/user.dart';
-import 'package:e_commerce_app/views/admin.dart';
+import 'package:e_commerce_app/views/admin/admin.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/register.dart';
 
@@ -94,7 +94,9 @@ class _LoginState extends State<Login> {
                   ElevatedButton(
                     onPressed: () async {
                       var user = await firebaseHelper.signIn(email!, password!);
-                      firebaseHelper.firestoreGet("Person", user!.uid).then((doc) {
+                      firebaseHelper
+                          .firestoreGet("Person", user!.uid)
+                          .then((doc) {
                         Login.admin = doc["admin"];
                         User loginUser = User(
                             id: user.uid,

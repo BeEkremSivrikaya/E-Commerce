@@ -1,6 +1,6 @@
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:e_commerce_app/utility/product.dart';
-import 'package:e_commerce_app/views/admin.dart';
+import 'package:e_commerce_app/views/admin/admin.dart';
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/login.dart';
 import 'package:e_commerce_app/views/seller.dart';
@@ -36,14 +36,14 @@ class _ECommerceState extends State<ECommerce> {
     addNewProduct(String id) {
       firebaseHelper.firestoreGet("products", id).then((doc) {
         Product newProduct = Product(
-            id: id,
-            name: doc["name"],
-            category: doc["category"],
-            comments: doc["comments"],
-            description: doc["description"],
-            price: doc["price"],
-            sellerId: doc["sellerId"],
-            );
+          id: id,
+          name: doc["name"],
+          category: doc["category"],
+          comments: doc["comments"],
+          description: doc["description"],
+          price: doc["price"],
+          sellerId: doc["sellerId"],
+        );
         setState(() {
           products.add(newProduct);
         });
@@ -109,31 +109,33 @@ class _ECommerceState extends State<ECommerce> {
           ),
         ),
       ),
-      bottomNavigationBar:Login.admin? Container(
-          child: ButtonBar(
-        alignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ElevatedButton(
-              onPressed: () {},
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                StadiumBorder(),
-              )),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Admin(),
-                        ),
-                      );
-                },
-                icon: Icon(
-                  Icons.admin_panel_settings,
-                ),
-              ))
-        ],
-      )):null,
+      bottomNavigationBar: Login.admin
+          ? Container(
+              child: ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(
+                      StadiumBorder(),
+                    )),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Admin(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.admin_panel_settings,
+                      ),
+                    ))
+              ],
+            ))
+          : null,
     );
   }
 }
