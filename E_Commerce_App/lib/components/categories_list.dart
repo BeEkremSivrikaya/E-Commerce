@@ -10,11 +10,17 @@ class CategoriesList extends StatefulWidget {
 }
 
 class _CategoriesListState extends State<CategoriesList> {
-  String? name = ECommerce.categories.first;
+  
   List<String> categoryList = ECommerce.categories.sublist(1);
+  String? name;
   Function? onChange;
   _CategoriesListState({this.onChange});
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    name = categoryList.first;
+  }
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
