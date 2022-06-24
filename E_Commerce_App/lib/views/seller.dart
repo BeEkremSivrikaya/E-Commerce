@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e_commerce_app/components/categories_list.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,10 @@ class _SellerState extends State<Seller> {
   Product? product = Product(sellerId: "1");
   PlatformFile? file;
   FirebaseHelper firebaseHelper = FirebaseHelper();
+
+  onCategoryChange(String category){
+    product!.category = category;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,31 +120,6 @@ class _SellerState extends State<Seller> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
-                  onChanged: (value) => {product!.category = value.toString()},
-                  decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.only(
-                          left: 14.0, bottom: 6.0, top: 8.0),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.blueAccent,
-                        ),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      border: InputBorder.none,
-                      labelText: 'Enter Product Category Name',
-                      hintText: 'Write Here'),
-                ),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
                   onChanged: (value) =>
                       {product!.price = double.tryParse(value.toString())},
                   decoration: InputDecoration(
@@ -163,6 +143,9 @@ class _SellerState extends State<Seller> {
               SizedBox(
                 height: 10.0,
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CategoriesList(onChange: onCategoryChange,)),
               Positioned(
                 bottom: 0,
                 child: ElevatedButton(

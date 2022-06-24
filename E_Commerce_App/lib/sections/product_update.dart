@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/components/categories_list.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:e_commerce_app/utility/product.dart';
 import 'package:e_commerce_app/utility/product.dart';
@@ -7,6 +8,9 @@ class ProductUpdate extends StatelessWidget {
   Product? product;
   ProductUpdate({this.product});
 
+  onCategoryChange(String category){
+    product!.category = category;
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,19 +55,7 @@ class ProductUpdate extends StatelessWidget {
               ),
             ),
           ),
-          TextFormField(
-            onChanged: (value) {
-              product!.category = value.toString();
-            },
-            maxLines: 1,
-            decoration: InputDecoration(
-              hintText: product!.category.toString(),
-              prefixIcon: const Icon(Icons.person),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
+          CategoriesList(onChange: onCategoryChange,),
           ElevatedButton(onPressed: ()=>{
             FirebaseHelper().updateProduct(product!),
             Navigator.pop(context),

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:e_commerce_app/components/categories_list.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:e_commerce_app/utility/product.dart';
 import 'package:e_commerce_app/views/admin/admin.dart';
@@ -15,6 +18,8 @@ class ECommerce extends StatefulWidget {
   ECommerce({this.user});
   @override
   State<ECommerce> createState() => _ECommerceState(user: user);
+
+  static List<String> categories = ['All','Electronic', 'Book', 'Toy', 'Outfit'];
 }
 
 class _ECommerceState extends State<ECommerce> {
@@ -22,17 +27,24 @@ class _ECommerceState extends State<ECommerce> {
   _ECommerceState({this.user});
 
   List<Product> products = List<Product>.empty(growable: true);
+  List<Product> productsView = List<Product>.empty(growable: true);
 
   FirebaseHelper firebaseHelper = FirebaseHelper();
+
+  Timer? timer;
+  String category = ECommerce.categories.first;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getAllProducts();
+    timer =
+        Timer.periodic(Duration(seconds: 10), (Timer t) => getAllProducts());
   }
 
   getAllProducts() async {
+    print("object");
     addNewProduct(String id) {
       firebaseHelper.firestoreGet("products", id).then((doc) {
         Product newProduct = Product(
@@ -45,14 +57,44 @@ class _ECommerceState extends State<ECommerce> {
           sellerId: doc["sellerId"],
         );
         setState(() {
-          products.add(newProduct);
-        });
+          if (newProduct.sellerId != Login.userId) {
+            bool contain = false;
+
+            products.forEach((product) => {
+                  if (product.id == newProduct.id)
+                    {
+                      contain = true,
+                    }
+                });
+            if (!contain) {
+              products.add(newProduct);
+              renderCategoryView();
+            }
+          }
+          
+        }
+        );
       });
     }
 
     firebaseHelper.firestore.collection("products").get().then((snapshot) {
       snapshot.docs.forEach((doc) => {addNewProduct(doc.id.toString())});
     });
+  }
+
+  renderCategoryView() {
+    setState(() {
+      productsView.clear();
+      products.forEach((product) => {
+        if(category=="All"){
+          productsView.add(product)
+        }else if (product.category == category) {productsView.add(product),}
+          });
+    });
+  }
+
+  setCategory(String category) {
+    this.category = category;
   }
 
   @override
@@ -95,20 +137,58 @@ class _ECommerceState extends State<ECommerce> {
           // ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          padding: EdgeInsets.only(top: 16),
-          child: ListView.builder(
-            itemCount: products.length,
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return ProductCard(product: products[index]);
-            },
+      body: Column(children: [
+        Container(
+          height: 50,
+          color: Color.fromARGB(253, 204, 204, 204),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                itemCount: ECommerce.categories.length,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: GestureDetector(
+                      onTap: () => {
+                        setCategory(ECommerce.categories[index]),
+                        renderCategoryView()
+                        },
+                      child: Container(
+                        width: 100,
+                        height: 20,
+                        color: Color.fromARGB(255, 87, 186, 247),
+                        child: Center(child: Text(ECommerce.categories[index])),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ),
-      ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.76,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Container(
+              child: ListView.builder(
+                itemCount: productsView.length,
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return ProductCard(product: productsView[index]);
+                },
+              ),
+            ),
+          ),
+        ),
+      ]),
       bottomNavigationBar: Login.admin
           ? Container(
               child: ButtonBar(
