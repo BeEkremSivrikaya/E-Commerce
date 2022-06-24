@@ -15,8 +15,11 @@ class Basket extends StatefulWidget {
 }
 
 class BasketState extends State<Basket> {
+  static BasketState? instance;
   var user;
-  BasketState({this.user});
+  BasketState({this.user}){
+    instance = this;
+  }
 
   FirebaseHelper firebaseHelper = FirebaseHelper();
   static double sum = 0;

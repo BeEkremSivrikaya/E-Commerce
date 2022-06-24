@@ -97,17 +97,6 @@ class _LoginState extends State<Login> {
                       firebaseHelper
                           .firestoreGet("Person", user!.uid)
                           .then((doc) {
-                        Login.admin = doc["admin"];
-                        User loginUser = User(
-                            id: user.uid,
-                            name: doc["name"],
-                            surname: doc["surname"],
-                            accountId: doc["accountId"],
-                            eMail: doc["eMail"],
-                            password: doc["password"],
-                            telNumber: doc["telNumber"],
-                            products: doc["products"]);
-                        Login.user = loginUser;
                       });
                       Navigator.pushReplacement(
                         context,

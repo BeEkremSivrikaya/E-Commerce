@@ -1,4 +1,5 @@
 class Account {
-  String? ownerId, moneyAmount, address;
-  Account({this.ownerId, this.moneyAmount, this.address});
+  String? ownerId, address;
+  double moneyAmount;
+  Account({this.ownerId="", this.moneyAmount=0, this.address=""});
 }

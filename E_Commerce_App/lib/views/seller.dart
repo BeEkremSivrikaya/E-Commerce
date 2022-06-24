@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:e_commerce_app/components/categories_list.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
+import 'package:e_commerce_app/views/login.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/utility/product.dart';
@@ -151,6 +152,7 @@ class _SellerState extends State<Seller> {
                 child: ElevatedButton(
                   onPressed: () {
                     firebaseHelper.uploadProduct(product!, file!);
+                    Navigator.pop(context);
                   },
                   child: Text(
                     'Submit',

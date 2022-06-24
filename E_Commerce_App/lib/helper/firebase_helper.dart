@@ -73,9 +73,8 @@ class FirebaseHelper {
     firestore.collection(path).doc(id).delete();
   }
 
-  Future firestoreUpdate(
-      String path, String id, Map<String, dynamic> map) async {
-    firestore.collection(path).doc(id).update(map);
+  Future firestoreUpdate(String path, String id, Map<String, dynamic> map) async {
+    return firestore.collection(path).doc(id).update(map);
   }
 
   Future updateUser(app.User user) async {
@@ -100,7 +99,7 @@ class FirebaseHelper {
     });
   }
 
-  uploadProduct(Product product, PlatformFile file) {
+  uploadProduct(Product product, PlatformFile file) async{
     firestoreAdd("products", {
       "id": product.id,
       "name": product.name,
@@ -110,6 +109,7 @@ class FirebaseHelper {
       "sellerId": Login.userId,
       "category": product.category
     }).then((value) => {
+          Login.user.products.add(value.id),
           uploadFile(file, value.id),
           firestore.collection("Person").doc(Login.userId).update({
             "products": FieldValue.arrayUnion([value.id])

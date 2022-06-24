@@ -1,23 +1,41 @@
+import 'dart:ffi';
+
 import 'package:e_commerce_app/components/basket_card.dart';
 import 'package:e_commerce_app/components/purches_cart.dart';
 import 'package:e_commerce_app/utility/account.dart';
 import 'package:e_commerce_app/utility/product.dart';
 import 'package:e_commerce_app/views/basket.dart';
+import 'package:e_commerce_app/views/login.dart';
 import 'package:flutter/material.dart';
 
 import '../helper/firebase_helper.dart';
 
-class Purches extends StatelessWidget {
-  Product? product = Product();
+class Purches extends StatefulWidget {
+  @override
+  State<Purches> createState() => _PurchesState();
+}
+
+class _PurchesState extends State<Purches> {
   String? imageUrl;
+
   Account? account = Account();
 
-  getImageUrl() async {
-    imageUrl = await FirebaseHelper().downloadFile("files", product!.id!);
+  @override
+  void initState() {
+    super.initState();
+    getAccount();
   }
 
   getAccount() async {
-    //FirebaseHelper().firestoreGet("accounts", )
+    print("account get");
+    FirebaseHelper().firestoreGet("accounts", Login.userId).then((doc) => {
+          account = Account(
+            address: doc["address"],
+            moneyAmount: doc["moneyAmount"],
+            ownerId: doc["ownerId"],
+          ),
+          this.setState(() {})
+        });
   }
 
   @override
@@ -37,13 +55,11 @@ class Purches extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                        child: const Text("hesap adı"),
+                        child: Text("Money Amount : " +
+                            account!.moneyAmount.toString()),
                       ),
                       Container(
-                        child: const Text("para miktarı"),
-                      ),
-                      Container(
-                        child: const Text("hesap adresi"),
+                        child: Text("Address : " + account!.address!),
                       )
                     ],
                   ),
@@ -76,10 +92,14 @@ class Purches extends StatelessWidget {
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width *
-                                              0.7,
+                                              0.6,
                                           child: TextField(
-                                            // onChanged: (value) =>
-                                            //     {product!.name = value.toString()},
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (value) => {
+                                              account!.moneyAmount =
+                                                  double.tryParse(
+                                                      value.toString())!
+                                            },
                                             decoration: InputDecoration(
                                                 contentPadding:
                                                     const EdgeInsets.only(
@@ -104,18 +124,22 @@ class Purches extends StatelessWidget {
                                                           10.0),
                                                 ),
                                                 border: InputBorder.none,
-                                                labelText: 'Enter Product Name',
+                                                labelText: 'Current Amount :' +
+                                                    account!.moneyAmount!
+                                                        .toString(),
                                                 hintText: 'Write Here'),
                                           ),
                                         ),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () {},
-                                        child: Container(
-                                          //width: 100,
-                                          child: Center(child: Text("Update")),
-                                        ),
-                                      )
+                                          onPressed: () {
+                                            FirebaseHelper().firestoreUpdate(
+                                                "accounts", Login.userId, {
+                                              "moneyAmount":
+                                                  account!.moneyAmount
+                                            });
+                                          },
+                                          child: Text("Update Money"))
                                     ],
                                   ),
                                   SizedBox(
@@ -126,8 +150,8 @@ class Purches extends StatelessWidget {
                                     child: TextField(
                                       keyboardType: TextInputType.multiline,
                                       maxLines: 4,
-
-                                      //onChanged: (value) => {product!.name = value.toString()},
+                                      onChanged: (value) =>
+                                          {account!.address = value.toString()},
                                       decoration: InputDecoration(
                                           contentPadding: const EdgeInsets.only(
                                               left: 14.0,
@@ -147,7 +171,8 @@ class Purches extends StatelessWidget {
                                                 BorderRadius.circular(10.0),
                                           ),
                                           border: InputBorder.none,
-                                          labelText: 'Enter Product Name',
+                                          labelText: 'Current Address :' +
+                                              account!.address!,
                                           hintText: 'Write Here'),
                                     ),
                                   ),
@@ -155,10 +180,16 @@ class Purches extends StatelessWidget {
                                     height: 10.0,
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      FirebaseHelper().firestoreUpdate(
+                                          "accounts",
+                                          Login.userId,
+                                          {"address": account!.address});
+                                    },
                                     child: Container(
                                       width: 150,
-                                      child: Center(child: Text("Update")),
+                                      child:
+                                          Center(child: Text("Update Address")),
                                     ),
                                   )
                                 ]),
@@ -194,7 +225,59 @@ class Purches extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              if(account!.address=="" || account!.moneyAmount==0.0){
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text(
+                      "Hesap Bilgilerinizi Giriniz",
+                      style: TextStyle(color: Colors.red),
+                    ));
+                  },
+                );
+                return;
+              }
+              if (BasketState.sum > account!.moneyAmount) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text(
+                      "Yetersiz Bakiye!",
+                      style: TextStyle(color: Colors.red),
+                    ));
+                  },
+                );
+
+                return;
+              }
+              setState(() {
+                account!.moneyAmount = account!.moneyAmount - BasketState.sum;
+                Basket.products.clear();
+                BasketState.instance!.setState(() {});
+              });
+
+              FirebaseHelper().firestoreUpdate("accounts", Login.userId,
+                  {"moneyAmount": account!.moneyAmount});
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Siparişiniz Alındı"),
+                    content: Text("Ürün adresinize gönderilecektir"),
+                    actions: [
+                      ElevatedButton(onPressed: (){
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }, child: Text("Tamam")),
+                    ],
+                  );
+                },
+              );
+            },
             child: Container(
               width: 100,
               child: const Center(child: Text("BUY")),
