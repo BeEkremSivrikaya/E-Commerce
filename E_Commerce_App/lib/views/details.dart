@@ -68,6 +68,7 @@ class _DetailsState extends State<Details> {
                 SizedBox(
                   height: 40,
                 ),
+                Text(product!.category!),
                 Expanded(
                   child: Container(
                     width: size.width,

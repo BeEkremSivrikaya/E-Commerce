@@ -83,8 +83,9 @@ class _ECommerceState extends State<ECommerce> {
   }
 
   renderCategoryView() {
+    productsView.clear();
     setState(() {
-      productsView.clear();
+      
       products.forEach((product) => {
         if(category=="All"){
           productsView.add(product)
