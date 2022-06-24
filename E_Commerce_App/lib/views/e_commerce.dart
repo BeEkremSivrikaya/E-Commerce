@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:e_commerce_app/components/categories_list.dart';
 import 'package:e_commerce_app/helper/firebase_helper.dart';
@@ -7,6 +8,7 @@ import 'package:e_commerce_app/views/admin/admin.dart';
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/login.dart';
 import 'package:e_commerce_app/views/seller.dart';
+import 'package:e_commerce_app/views/user_products.dart';
 import 'package:flutter/material.dart';
 
 import '../components/product_card.dart';
@@ -19,7 +21,13 @@ class ECommerce extends StatefulWidget {
   @override
   State<ECommerce> createState() => _ECommerceState(user: user);
 
-  static List<String> categories = ['All','Electronic', 'Book', 'Toy', 'Outfit'];
+  static List<String> categories = [
+    'All',
+    'Electronic',
+    'Book',
+    'Toy',
+    'Outfit'
+  ];
 }
 
 class _ECommerceState extends State<ECommerce> {
@@ -39,12 +47,23 @@ class _ECommerceState extends State<ECommerce> {
     // TODO: implement initState
     super.initState();
     getAllProducts();
-    timer =
-        Timer.periodic(Duration(seconds: 10), (Timer t) => getAllProducts());
+    FirebaseHelper().firestoreGet("Person", Login.userId).then((doc) => {
+          print("get"),
+          Login.admin = doc["admin"],
+          Login.user.id = user.uid,
+          Login.user.name = doc["name"],
+          Login.user.surname = doc["surname"],
+          Login.user.accountId = doc["accountId"],
+          Login.user.eMail = doc["eMail"],
+          Login.user.password = doc["password"],
+          Login.user.telNumber = doc["telNumber"],
+          Login.user.products = doc["products"],
+
+        });
+    //timer = Timer.periodic(Duration(seconds: 10), (Timer t) => getAllProducts());
   }
 
   getAllProducts() async {
-    print("object");
     addNewProduct(String id) {
       firebaseHelper.firestoreGet("products", id).then((doc) {
         Product newProduct = Product(
@@ -71,9 +90,7 @@ class _ECommerceState extends State<ECommerce> {
               renderCategoryView();
             }
           }
-          
-        }
-        );
+        });
       });
     }
 
@@ -83,19 +100,25 @@ class _ECommerceState extends State<ECommerce> {
   }
 
   renderCategoryView() {
-    productsView.clear();
     setState(() {
-      
-      products.forEach((product) => {
-        if(category=="All"){
-          productsView.add(product)
-        }else if (product.category == category) {productsView.add(product),}
-          });
+      productsView.clear();
     });
+
+    products.forEach((product) => {
+          if (category == "All")
+            {productsView.add(product)}
+          else if (product.category == category)
+            {
+              setState(() {
+                productsView.add(product);
+              })
+            }
+        });
   }
 
   setCategory(String category) {
     this.category = category;
+    renderCategoryView();
   }
 
   @override
@@ -103,7 +126,7 @@ class _ECommerceState extends State<ECommerce> {
     return Scaffold(
       //backgroundColor: Colors.white70,
       appBar: AppBar(
-        title: Text("Ürünler"),
+        title: Text(Login.user.name!),
         centerTitle: true,
         actions: [
           IconButton(
@@ -173,15 +196,13 @@ class _ECommerceState extends State<ECommerce> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: GestureDetector(
-                      onTap: () => {
+                    child: ElevatedButton(
+                      onPressed: () => {
                         setCategory(ECommerce.categories[index]),
-                        renderCategoryView()
-                        },
+                      },
                       child: Container(
                         width: 100,
                         height: 20,
-                        color: Color.fromARGB(255, 87, 186, 247),
                         child: Center(child: Text(ECommerce.categories[index])),
                       ),
                     ),
@@ -191,35 +212,54 @@ class _ECommerceState extends State<ECommerce> {
             ),
           ),
         ),
-        
       ]),
-      bottomNavigationBar: Login.admin
-          ? Container(
-              child: ButtonBar(
-              alignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                        shape: MaterialStateProperty.all(
-                      StadiumBorder(),
-                    )),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Admin(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.admin_panel_settings,
-                      ),
-                    ))
-              ],
-            ))
-          : null,
+      bottomNavigationBar: Container(
+          child: ButtonBar(
+        alignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Login.admin
+              ? ElevatedButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                      shape: MaterialStateProperty.all(
+                    StadiumBorder(),
+                  )),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Admin(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.admin_panel_settings,
+                    ),
+                  ))
+              : Container(
+                  width: 0,
+                  height: 0,
+                ),
+          ElevatedButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                StadiumBorder(),
+              )),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProducts(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.all_inbox_outlined),
+              ))
+        ],
+      )),
     );
   }
 }
