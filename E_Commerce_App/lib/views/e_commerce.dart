@@ -138,7 +138,25 @@ class _ECommerceState extends State<ECommerce> {
           // ),
         ],
       ),
-      body: Column(children: [
+      body: Stack(children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: Container(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Container(
+                child: ListView.builder(
+                  itemCount: productsView.length,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return ProductCard(product: productsView[index]);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
         Container(
           height: 50,
           color: Color.fromARGB(253, 204, 204, 204),
@@ -173,22 +191,7 @@ class _ECommerceState extends State<ECommerce> {
             ),
           ),
         ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.76,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Container(
-              child: ListView.builder(
-                itemCount: productsView.length,
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return ProductCard(product: productsView[index]);
-                },
-              ),
-            ),
-          ),
-        ),
+        
       ]),
       bottomNavigationBar: Login.admin
           ? Container(
