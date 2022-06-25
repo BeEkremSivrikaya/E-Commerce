@@ -9,7 +9,7 @@ import '../helper/firebase_helper.dart';
 import 'e_commerce.dart';
 
 class Login extends StatefulWidget {
-  static User user = User();
+  static User user = User(name: "");
   static String userId = "";
   static bool admin = false;
   @override
@@ -97,6 +97,7 @@ class _LoginState extends State<Login> {
                       firebaseHelper
                           .firestoreGet("Person", user!.uid)
                           .then((doc) {
+                        Login.admin = doc["admin"];
                         Login.user = User(
                           id: user.uid,
                           name: doc["name"],
