@@ -1,4 +1,4 @@
 class Comment {
-  String? comment, userId;
-  Comment({this.comment, this.userId});
+  String? id,comment, userId;
+  Comment({this.id,this.comment, this.userId});
 }

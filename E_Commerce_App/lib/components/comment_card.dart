@@ -1,5 +1,6 @@
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:e_commerce_app/utility/comment.dart';
+import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/login.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +70,12 @@ class _CommentCardState extends State<CommentCard> {
                 ),
                 (comment!.userId==Login.userId )?Positioned(
                   right: 0,
-                  child: IconButton(onPressed: (){}, icon: Icon(Icons.delete), color: Colors.red,))
+                  child: IconButton(onPressed: (){
+                    DetailsState.instance!.setState(() {
+                      DetailsState.instance!.allComments.remove(comment);
+                    });
+                    FirebaseHelper().deleteComment(comment!.userId!, comment!.id!);
+                  }, icon: Icon(Icons.delete), color: Colors.red,))
                 :Container(width: 0,height: 0,)
               ],
             )),

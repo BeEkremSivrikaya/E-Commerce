@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:e_commerce_app/utility/comment.dart';
 import 'package:e_commerce_app/utility/product.dart';
+import 'package:e_commerce_app/views/details.dart';
 import 'package:e_commerce_app/views/login.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -73,7 +74,8 @@ class FirebaseHelper {
     firestore.collection(path).doc(id).delete();
   }
 
-  Future firestoreUpdate(String path, String id, Map<String, dynamic> map) async {
+  Future firestoreUpdate(
+      String path, String id, Map<String, dynamic> map) async {
     return firestore.collection(path).doc(id).update(map);
   }
 
@@ -99,7 +101,7 @@ class FirebaseHelper {
     });
   }
 
-  uploadProduct(Product product, PlatformFile file) async{
+  uploadProduct(Product product, PlatformFile file) async {
     firestoreAdd("products", {
       "id": product.id,
       "name": product.name,
@@ -163,8 +165,26 @@ class FirebaseHelper {
     });
   }
 
+  Future deleteComment(
+    String userId,
+    String commentId,
+  ) async {
+    FirebaseHelper().firestoreDelete("comments", commentId);
+    firestore.collection("products").doc(userId).update({
+      "comments": FieldValue.arrayRemove([commentId])
+    });
+  }
+
   void uploadComment(String comment, String productId, String userId) {
     firestoreAdd("comments", {"comment": comment, "user": userId})
-        .then((value) => {updateArray("products", productId, value.id)});
+        .then((value) => {
+              updateArray("products", productId, value.id),
+              DetailsState.instance!.setState(() {
+                DetailsState.instance!.product!.comments.add(value.id);
+                DetailsState.instance!.allComments.add(Comment(
+                    id: value.id, comment: comment, userId: Login.userId));
+              }),
+              
+            });
   }
 }

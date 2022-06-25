@@ -14,15 +14,18 @@ class Details extends StatefulWidget {
   Details({this.product});
   
   @override
-  State<Details> createState() => _DetailsState(product: product);
+  State<Details> createState() => DetailsState(product: product);
 }
 
-class _DetailsState extends State<Details> {
+class DetailsState extends State<Details> {
+  static DetailsState? instance;
   Product? product;
   String? newComment;
   String? sellerName = "";
   List<dynamic> allComments = List<dynamic>.empty(growable: true);
-  _DetailsState({this.product});
+  DetailsState({this.product}){
+    instance=this;
+  }
 
   @override
   void initState() {
@@ -41,10 +44,13 @@ class _DetailsState extends State<Details> {
 
   }
   getAllComments() async {
-    product!.comments.forEach((id) async {
+    FirebaseHelper().firestoreGet("products", product!.id!).then((doc) => {
+      doc["comments"].forEach((id) async {
       var comment =
           await FirebaseHelper().firestoreGet("comments", id).then((doc) {
+            print(doc["comment"]);
         Comment newComment = Comment(
+          id: id,
           comment: doc["comment"],
           userId: doc["user"],
         );
@@ -52,6 +58,7 @@ class _DetailsState extends State<Details> {
           allComments.add(newComment);
         });
       });
+    })
     });
   }
 
@@ -122,9 +129,7 @@ class _DetailsState extends State<Details> {
                             print(product!.id!);
                             FirebaseHelper().uploadComment(
                                 newComment!, product!.id!, Login.userId);
-                                setState(() {
-                                  allComments.add(Comment(comment: newComment,userId: Login.userId));
-                                });
+                                
                             // yorumu eklesin algoritması eklenecek.
                             // onChanged:
                             // (value) => {product!.comments = value.toString()};
