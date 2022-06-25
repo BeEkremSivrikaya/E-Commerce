@@ -125,7 +125,7 @@ class _PurchesState extends State<Purches> {
                                                 ),
                                                 border: InputBorder.none,
                                                 labelText: 'Current Amount :' +
-                                                    account!.moneyAmount!
+                                                    account!.moneyAmount
                                                         .toString(),
                                                 hintText: 'Write Here'),
                                           ),
@@ -226,7 +226,7 @@ class _PurchesState extends State<Purches> {
           ),
           ElevatedButton(
             onPressed: () {
-              if(account!.address=="" || account!.moneyAmount==0.0){
+              if (account!.address == "" || account!.moneyAmount == 0.0) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -268,11 +268,13 @@ class _PurchesState extends State<Purches> {
                     title: Text("Siparişiniz Alındı"),
                     content: Text("Ürün adresinize gönderilecektir"),
                     actions: [
-                      ElevatedButton(onPressed: (){
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }, child: Text("Tamam")),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
+                          child: Text("Tamam")),
                     ],
                   );
                 },
