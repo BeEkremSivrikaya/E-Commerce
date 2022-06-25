@@ -6,12 +6,13 @@ import 'package:e_commerce_app/utility/comment.dart';
 import 'package:e_commerce_app/utility/product.dart';
 import 'package:e_commerce_app/views/basket.dart';
 import 'package:e_commerce_app/views/login.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
   Product? product;
   Details({this.product});
-
+  
   @override
   State<Details> createState() => _DetailsState(product: product);
 }
@@ -19,6 +20,7 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   Product? product;
   String? newComment;
+  String? sellerName = "";
   List<dynamic> allComments = List<dynamic>.empty(growable: true);
   _DetailsState({this.product});
 
@@ -26,10 +28,18 @@ class _DetailsState extends State<Details> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
     getAllComments();
+    getSellerName();
   }
+  getSellerName(){
+    FirebaseHelper().firestoreGet("Person", product!.sellerId!).then((doc) => {
+      this.setState(() {
+        sellerName=doc["name"];
+      })
+      
+    });
 
+  }
   getAllComments() async {
     product!.comments.forEach((id) async {
       var comment =
@@ -68,6 +78,7 @@ class _DetailsState extends State<Details> {
                 SizedBox(
                   height: 40,
                 ),
+                Text(sellerName!),
                 Text(product!.category!),
                 Expanded(
                   child: Container(
