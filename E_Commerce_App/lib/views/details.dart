@@ -122,6 +122,9 @@ class _DetailsState extends State<Details> {
                             print(product!.id!);
                             FirebaseHelper().uploadComment(
                                 newComment!, product!.id!, Login.userId);
+                                setState(() {
+                                  allComments.add(Comment(comment: newComment,userId: Login.userId));
+                                });
                             // yorumu eklesin algoritması eklenecek.
                             // onChanged:
                             // (value) => {product!.comments = value.toString()};

@@ -1,5 +1,6 @@
 import 'package:e_commerce_app/helper/firebase_helper.dart';
 import 'package:e_commerce_app/utility/comment.dart';
+import 'package:e_commerce_app/views/login.dart';
 import 'package:flutter/material.dart';
 
 class CommentCard extends StatefulWidget {
@@ -49,19 +50,27 @@ class _CommentCardState extends State<CommentCard> {
             width: 200,
             height: 70,
             // color: Color.fromARGB(255, 162, 160, 160),
-            child: Column(
-              //mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                SizedBox(
-                  height: 10,
-                  width: 10,
+                Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                      width: 10,
+                    ),
+                    Text(
+                      "Kullanıcı Adı: " + name!,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(widget.comment!.comment!),
+                  ],
                 ),
-                Text(
-                  "Kullanıcı Adı: " + name!,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(widget.comment!.comment!),
+                (comment!.userId==Login.userId )?Positioned(
+                  right: 0,
+                  child: IconButton(onPressed: (){}, icon: Icon(Icons.delete), color: Colors.red,))
+                :Container(width: 0,height: 0,)
               ],
             )),
       ),
